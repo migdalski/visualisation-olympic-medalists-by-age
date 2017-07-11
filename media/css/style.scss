@@ -2,12 +2,14 @@ body {
   font-family: 'Roboto', sans-serif;
   margin: 30px 10px;
   font-size: 12px;
+  color: #231F20;
 }
 
 h1.h1,
 h3.h3 {
   text-align: center;
   margin: 0;
+  font-family: 'Roboto', sans-serif;
 }
 
 h1.h1 {
@@ -53,4 +55,26 @@ h3.h3 {
 .footer {
   text-align: center;
   margin-top: 10px;
+}
+
+circle {
+  transition: all 0.1s ease-in-out;
+}
+
+.median {
+  line {
+    stroke: #F33040 !important;
+    stroke-width: 4;
+    opacity: 0.35;
+    stroke-linecap: round;
+    transition: all 0.3s ease-in-out;
+    cursor: pointer;
+  }
+  text {
+    transition: all 0.3s ease-in-out;
+  }
+}
+
+.c3-grid line {
+  stroke: rgba(181, 187, 194, 0.61);
 }

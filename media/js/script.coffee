@@ -1,6 +1,3 @@
-DEFAULT_SELECTED = ["100 metres", "400 metres", "800 metres", "1,500 metres", "10,000 metres", "100/110 metres Hurdles",
-  "400 metres Hurdles",
-  "3,000 metres Steeplechase", "50 kilometres Walk", "High Jump", "Long Jump", "Shot Put", "Heptathlon/Decathlon"]
 GENDER = {
   "Male": "fa-mars"
   "Female": "fa-venus"
@@ -60,8 +57,8 @@ d3.queue()
         tick:
           multiline: false
       y:
-        min: 16,
-        max: 45
+        min: 18,
+        max: 48
     size:
       height: 800
     grid:
@@ -94,6 +91,7 @@ d3.queue()
       for value, index in this.data.targets[0].values
         value.data = this.config.data_json[index]
     onrendered: ->
+      me = this
       circles = d3.selectAll(".c3-chart-lines > .c3-chart-line > .c3-circles > circle")
       events = {}
       for circle in circles[0]
@@ -101,7 +99,43 @@ d3.queue()
           events[circle.attributes.cy.nodeValue] = new Array()
         events[circle.attributes.cy.nodeValue].push circle
 
+      i = 0
+
+      div = d3.select("body").append("div")
+        .attr("class", "tooltip")
+        .style("opacity", 0)
+
+      medianHeight = parseInt(d3.selectAll(".c3-xgrids > .c3-xgrid")[0][1].attributes.y1.nodeValue) - parseInt(d3.selectAll(".c3-xgrids > .c3-xgrid")[0][0].attributes.y1.nodeValue) - 5
       for key, value of events
+        median = d3.median value, (v) -> v.__data__.value
+
+        g = d3.select("#chart > svg > g:nth-child(2) > g.c3-chart > g.c3-event-rects.c3-event-rects-multiple")
+          .append("g")
+          .attr
+            transform: -> "translate(#{me.api.internal.y(median)},#{parseInt(d3.selectAll(".c3-xgrids > .c3-xgrid")[0][i].attributes.y1.nodeValue)})"
+            class: 'median'
+
+        g.append("line")
+          .attr
+            y1: 5
+            y2: medianHeight
+            'z-index': -1
+          .on "mouseover", ->
+          this.style.opacity = .8
+          this.parentNode.lastChild.style.fillOpacity = .8
+          .on "mouseout", ->
+          this.style.opacity = null
+          this.parentNode.lastChild.style.fillOpacity = null
+
+        g.append("text")
+          .attr
+            dx: 5
+            dy: 10
+            'z-index': -1
+          .text "Median: #{format_age(median)}"
+
+        i++
+
         for dot in value
           step = 0
           start_y_value = dot.attributes.cy.ownerElement.cy.baseVal.value
@@ -110,3 +144,4 @@ d3.queue()
             s = Math.pow(-1, step) * Math.ceil(step / 2)
             dot.setAttribute("cy", start_y_value + s)
             step += 1
+
